@@ -38,6 +38,34 @@ module Dynamoid
       super
     end
 
+    # TODO: not supported "mutations_from_database"
+    def changes_include?(attr_name)
+      begin
+        # activemodel (5.2.0)
+        # attributes_changed_by_setter.include?(attr_name) || mutations_from_database.changed?(attr_name)
+        super
+      rescue => _
+        # activemodel (5.1.2)
+        attributes_changed_by_setter.include?(attr_name)
+      end
+    end
+
+    # TODO: not supported "mutations_from_database"
+    def changed_attributes
+      begin
+        # activemodel (5.2.0)
+        # if defined?(@cached_changed_attributes)
+        #   @cached_changed_attributes
+        # else
+        #   attributes_changed_by_setter.reverse_merge(mutations_from_database.changed_values).freeze
+        # end
+        super
+      rescue => _
+        # activemodel (5.1.2)
+        @changed_attributes ||= ActiveSupport::HashWithIndifferentAccess.new
+      end
+    end
+
     protected
 
     def attribute_method?(attr)
